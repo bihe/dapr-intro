@@ -5,32 +5,32 @@ IMAGE_GOLANG=${REPO}/dapr-golang-subscriber:latest
 .PHONY: help build dapr-run docker-build docker-run clean all
 
 help:
-	    @echo "Makefile arguments:"
-	    @echo ""
-	    @echo "Makefile commands:"
-	    @echo "build"
-		@echo "dapr-run"
-		@echo "docker-build"
-		@echo "docker-run"
-		@echo "clean"
-	    @echo "all"
+	@echo "Makefile arguments:"
+	@echo ""
+	@echo "Makefile commands:"
+	@echo "build"
+	@echo "dapr-run"
+	@echo "docker-build"
+	@echo "docker-run"
+	@echo "clean"
+	@echo "all"
 
 .DEFAULT_GOAL := all
 
 build:
-	    GOOS=linux GOARCH=amd64 go build -ldflags="-w -s" -o golang-subscriber ./*.go
+	GOOS=linux GOARCH=amd64 go build -ldflags="-w -s" -o golang-subscriber ./*.go
 
 dapr-run: build
-		@dapr run --app-id golang-subscriber --app-port 3000 ./golang-subscriber
+	@dapr run --app-id golang-subscriber --app-port 3000 ./golang-subscriber
 
 docker-build:
-		@docker build --pull -t ${IMAGE_GOLANG} ./
+	@docker build --pull -t ${IMAGE_GOLANG} ./
 
 docker-run: docker-build
-		@docker run -it -p 127.0.0.1:3000:3000 ${IMAGE_GOLANG}
+	@docker run -it -p 127.0.0.1:3000:3000 ${IMAGE_GOLANG}
 
 clean:
-		rm -f ./golang-subscriber
-		docker rmi -f ${IMAGE_GOLANG}
+	rm -f ./golang-subscriber
+	docker rmi -f ${IMAGE_GOLANG}
 
 all: build
