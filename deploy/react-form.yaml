@@ -39,4 +39,4 @@ spec:
         image: bihe/dapr-react-form:latest
         ports:
         - containerPort: 8080
-        imagePullPolicy: Always
+        imagePullPolicy: Never
