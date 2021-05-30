@@ -166,5 +166,3 @@ Without any change in the application logic we can now use Service-Bus instead o
 - PubSub-Overview: https://docs.dapr.io/developing-applications/building-blocks/pubsub/pubsub-overview/
 - Azure-Service-Bus PubSusb: https://docs.dapr.io/reference/components-reference/supported-pubsub/setup-azure-servicebus/
 - PubSub with Azure Service Bus: https://www.youtube.com/watch?v=umrUlfrZqKk
-
-
