@@ -21,9 +21,4 @@ build:
 	@docker build --pull -t ${IMAGE_DOTNET} ./dotnet-subscriber/
 	@docker build --pull -t ${IMAGE_REACT} ./react-form/
 
-push: build
-	@docker push ${IMAGE_GOLANG}
-	@docker push ${IMAGE_DOTNET}
-	@docker push ${IMAGE_REACT}
-
 all: build

@@ -44,6 +44,33 @@ dapr run --app-id dotnet-subscriber --app-port 5000 ./output/dotnet-subscriber
 
 Open the react-form in a browser and send messages to the different topics and see the result in the output of the applications.
 
+**Hint:**
+
+Where is the redis pubsub component when using dapr cli? If you install dapr a local redis container is deployed and the dapr component configured.
+
+![dapr containers](./doc/dapr_cli_container.png)
+
+The configuration for dapr cli can be found in the local dir: ```~/.dapr```
+
+![dapr components config](./doc/dapr_components_config_cli.png)
+
+The pubsub component is the same as later used with k8s.
+
+```yaml
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: pubsub
+spec:
+  type: pubsub.redis
+  metadata:
+  - name: redisHost
+    value: localhost:6379
+  - name: redisPassword
+    value: ""
+
+```
+
 # Kubernetes
 The kubernetes approach works almost the same, but of-course it uses containers to run the apps. For this purpose each application has a **Dockerfile** which produces the required container images. Dapr injects the sidecars via the dapr operator and enables the communication between the components.
 
