@@ -18,7 +18,11 @@ help:
 .DEFAULT_GOAL := all
 
 build:
-	GOOS=linux GOARCH=amd64 go build -ldflags="-w -s" -o golang-subscriber ./*.go
+ifeq ($(OS),Windows_NT)
+	go build -ldflags="-w -s" -o golang-subscriber.exe ./...
+else
+	GOOS=linux GOARCH=amd64 go build -ldflags="-w -s" -o golang-subscriber ./...
+endif
 
 dapr-run: build
 	@dapr run --app-id golang-subscriber --app-port 3000 ./golang-subscriber
@@ -30,7 +34,12 @@ docker-run: docker-build
 	@docker run -it -p 127.0.0.1:3000:3000 ${IMAGE_GOLANG}
 
 clean:
+ifeq ($(OS),Windows_NT)
+	pwsh -noprofile -command 'Remove-Item -Force -Recurse ./golang-subscriber.exe'
+	docker rmi -f ${IMAGE_DOTNET}
+else
 	rm -f ./golang-subscriber
-	docker rmi -f ${IMAGE_GOLANG}
+	docker rmi -f ${IMAGE_DOTNET}
+endif
 
 all: build

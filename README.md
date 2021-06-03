@@ -19,6 +19,8 @@ For the examples to work, the following software components need to be installed
 - docker (20.x) - https://docs.docker.com/get-docker/
 - mininkube, kubectl (1.20.x) - https://kubernetes.io/docs/tasks/tools/
 
+On Windows, best provided via scoop (https://scoop.sh/)
+
 For k8s/minikube follow these steps to enalbe [dapr for k8s](https://github.com/dapr/quickstarts/tree/master/hello-kubernetes) including the deployment of [redis](https://docs.dapr.io/getting-started/configure-state-pubsub/#create-a-redis-store) as a store and pubsub component.
 
 # dapr CLI
@@ -84,6 +86,51 @@ uses ```kubectl``` to deploy the applications and components defined in the yaml
 
 ![dapr k8s](./doc/dapr-pubsub-k8s-redis.png)
 
+
+## Show output
+Use ```kubectl``` to show the log-output of the individual pods:
+
+```
+kubectl logs -f --selector app=<appname> -c <appcontainer-name>
+```
+
+To use this as a real example - with the output
+
+```
+kubectl logs -f --selector app=golang-subscriber -c golang-subscriber
+```
+
+![kubectl pod output](./doc/kubectl_pod_output.png)
+
+To get the url/ip of the react-form on minikube use the following:
+
+```
+minikube service <service-name>
+```
+
+With the real example:
+
+```
+~#@❯ minikube service react-form                                               
+|-----------|------------|-------------|---------------------------|
+| NAMESPACE |    NAME    | TARGET PORT |            URL            |
+|-----------|------------|-------------|---------------------------|
+| default   | react-form |          80 | http://192.168.49.2:31363 |
+|-----------|------------|-------------|---------------------------|
+🏃  Starting tunnel for service react-form.
+|-----------|------------|-------------|------------------------|
+| NAMESPACE |    NAME    | TARGET PORT |          URL           |
+|-----------|------------|-------------|------------------------|
+| default   | react-form |             | http://127.0.0.1:62880 |
+|-----------|------------|-------------|------------------------|
+🎉  Opening service default/react-form in default browser...
+❗  Because you are using a Docker driver on windows, the terminal needs to be open to run it.
+```
+
+The output of the pods is as follows:
+
+![pod-outupt](./doc/pod_output.png)
+
 ## Local images
 The application images are not published to dockerhub or any other container-registry, because this would just be waste for this demo-purpouse. Instead the images are held locally and k8s is instructed to **not pull** the images!
 
@@ -110,6 +157,12 @@ The trick is to set some relevant ENVs via minikube and build again:
 
 ```
 eval $(minikube docker-env)
+```
+
+On __Windows__ and __powershell__ this translates to 
+
+```
+minikube docker-env --shell powershell | Invoke-Expression
 ```
 
 ## PubSub components
@@ -158,6 +211,8 @@ auth:
 Without any change in the application logic we can now use Service-Bus instead of redis!
 
 ![make](./doc/dapr-pubsub-k8s-az-sb.png)
+
+
 
 # Links
 
