@@ -1,5 +1,5 @@
 # dapr pub-sub example
-This repo is just a copy of the original [dapr](https://github.com/dapr/dapr) pubsub quickstart [sample](https://github.com/dapr/quickstarts/tree/master/pub-sub). 
+This repo is just a copy of the original [dapr](https://github.com/dapr/dapr) pubsub quickstart [sample](https://github.com/dapr/quickstarts/tree/master/pub-sub).
 
 The only changes are, that a [golang](https://golang.org/) and a [.NET](https://dotnet.microsoft.com/) subscriber are used (instead of the "original" nodejs, pyhton ones) and that [redis](https://redis.io/topics/streams-intro) can be swapped out with [Azure Service Bus](https://azure.microsoft.com/en-us/services/service-bus/).
 
@@ -82,7 +82,7 @@ The **./deploy** folder contains a Makefile which can be used to deploy/undeploy
 make deploy-redis
 ```
 
-uses ```kubectl``` to deploy the applications and components defined in the yaml files. 
+uses ```kubectl``` to deploy the applications and components defined in the yaml files.
 
 ![dapr k8s](./doc/dapr-pubsub-k8s-redis.png)
 
@@ -111,7 +111,7 @@ minikube service <service-name>
 With the real example:
 
 ```
-~#@❯ minikube service react-form                                               
+~#@❯ minikube service react-form
 |-----------|------------|-------------|---------------------------|
 | NAMESPACE |    NAME    | TARGET PORT |            URL            |
 |-----------|------------|-------------|---------------------------|
@@ -159,7 +159,7 @@ The trick is to set some relevant ENVs via minikube and build again:
 eval $(minikube docker-env)
 ```
 
-On __Windows__ and __powershell__ this translates to 
+On __Windows__ and __powershell__ this translates to
 
 ```
 minikube docker-env --shell powershell | Invoke-Expression
@@ -212,6 +212,72 @@ Without any change in the application logic we can now use Service-Bus instead o
 
 ![make](./doc/dapr-pubsub-k8s-az-sb.png)
 
+### Azure Service Bus
+To create a new Service Bus go to the Azure Portal https://portal.azure.com and enter the relevant information:
+
+![Azure Service Bus](./doc/azure_service_bus.png)
+
+- Pricing Tier: Standard is needed as we are using Topics
+
+**Programmatic Subscriptions**
+
+On deployment/start of the pubsub component the necessary Topics/Subscriptions are created for the Azure Service Bus. This is done by means of programmatic subscriptions. The subscriber-apps provide a JSON repsonse telling dapr for wich Topics the subscribe and on which routes the message is processed:
+
+Example from the ```dotnet-subscriber``` tells dapr that this app should be subscribed for the topics "ALL" and "Topic2".
+
+```csharp
+[HttpGet("/dapr/subscribe")]
+public List<Subscription> GetSubscription()
+{
+    return new List<Subscription>{
+        new Subscription{
+            PubSubName = PubSubName,
+            Topic = "ALL",
+            Route = "receive_all"
+        },
+        new Subscription{
+            PubSubName = PubSubName,
+            Topic = "Topic2",
+            Route = "receive_c"
+        }
+    };
+}
+```
+
+It is also possible to define the subscriptions via a **declaratice subscription** with a YAML file (https://v1-rc1.docs.dapr.io/developing-applications/building-blocks/pubsub/howto-publish-subscribe/)
+
+### Credentials
+As defined in the yaml file credentials are needed to access the Service Bus. We need the __Connection-String__ and store it within kubernetes. To do so ```kubectl```can be used as follows:
+
+```
+kubectl delete secret az-sb
+kubectl create secret generic az-sb --from-file=connstr=./connectionstring.txt
+```
+where the file ```connectionstring.txt``` hold the value copied from the Azure Portal.
+
+To verify the serets:
+
+```
+kubectl get secrets
+
+NAME                          TYPE                                  DATA   AGE
+az-sb                         Opaque                                1      103m
+```
+To show details:
+```
+kubectl describe secrets/az-sb
+
+Name:         az-sb
+Namespace:    default
+Labels:       <none>
+Annotations:  <none>
+
+Type:  Opaque
+
+Data
+====
+connstr:  165 bytes
+```
 
 
 # Links
