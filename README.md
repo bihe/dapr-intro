@@ -272,7 +272,6 @@ To create a new Service Bus go to the Azure Portal https://portal.azure.com and 
 
 - Pricing Tier: Standard is needed as we are using Topics
 
-
 ### Credentials
 As defined in the yaml file credentials are needed to access the Service Bus. We need the __Connection-String__ and store it within kubernetes. To do so ```kubectl```can be used as follows:
 
@@ -305,6 +304,21 @@ Data
 ====
 connstr:  165 bytes
 ```
+
+### Troubleshoot
+If the pubsub logic does not behave as expected it makes sense to have a look at the dapr logs (https://v1-rc3.docs.dapr.io/operations/troubleshooting/common_issues/)
+
+```
+kubectl logs <pod-name> daprd
+```
+
+The output gives some clues what might be wrong:
+
+```
+time="2021-06-05T09:39:15.1459458Z" level=error msg="failed to subscribe to topic ALL: azure service bus error: could not get topic ALL, Get \"https://<name>.servicebus.windows.net/ALL?api-version=2017-04\": dial tcp: lookup <name>.servicebus.windows.net on 10.96.0.10:53: no such host" app_id=dotnet-subscriber instance=dotnet-subscriber-7f4fcf7b96-mmkb9 scope=dapr.runtime type=log ver=1.2.0
+```
+
+The output above tells us, that the given service-bus cannot be resolved, resulting in an error.
 
 
 # Links
