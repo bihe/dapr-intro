@@ -16,13 +16,6 @@ import (
 // types
 // --------------------------------------------------------------------------
 
-// Subscribe defines route,topic and name for which an app may subscribe
-type Subscribe struct {
-	PubSubName string `json:"pubsubname,omitempty"`
-	Topic      string `json:"topic,omitempty"`
-	Route      string `json:"route,omitempty"`
-}
-
 // Message defines an object which is received
 type Message struct {
 	Topic string         `json:"topic,omitempty"`
@@ -37,31 +30,6 @@ type MessagePayload struct {
 // --------------------------------------------------------------------------
 // handler
 // --------------------------------------------------------------------------
-
-const pubSubName = "pubsub"
-
-func subscribe() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		sub := []Subscribe{
-			{
-				PubSubName: pubSubName,
-				Topic:      "ALL",
-				Route:      "receive_all",
-			},
-			{
-				PubSubName: pubSubName,
-				Topic:      "Topic1",
-				Route:      "receive_b",
-			},
-		}
-		payload, err := json.Marshal(sub)
-		if err != nil {
-			http.Error(w, err.Error(), 500)
-		}
-		w.Header().Add("content-type", "application/json")
-		w.Write(payload)
-	}
-}
 
 func procMessage(route string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -98,10 +66,6 @@ func main() {
 	}
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
-
-	// https://docs.dapr.io/developing-applications/building-blocks/pubsub/howto-publish-subscribe/#programmatic-subscriptions
-	// "The Dapr instance calls into your app at startup and expect a JSON response for the topic subscriptions with:"
-	r.Get("/dapr/subscribe", subscribe())
 
 	r.Post("/receive_all", procMessage("/receive_all"))
 	r.Post("/receive_b", procMessage("/receive_b"))

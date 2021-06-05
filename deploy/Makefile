@@ -30,10 +30,14 @@ _deploy-app:
 	@kubectl apply -f ./react-form.yaml
 	@kubectl apply -f ./dotnet-subscriber.yaml
 	@kubectl apply -f ./golang-subscriber.yaml
+	@kubectl apply -f ./golang-subscriber-subscribe-ALL.yaml
+	@kubectl apply -f ./golang-subscriber-subscribe-Topic1.yaml
 
 _undeploy-app:
 	@kubectl delete -f ./react-form.yaml
 	@kubectl delete -f ./dotnet-subscriber.yaml
 	@kubectl delete -f ./golang-subscriber.yaml
+	@kubectl delete -f ./golang-subscriber-subscribe-ALL.yaml
+	@kubectl delete -f ./golang-subscriber-subscribe-Topic1.yaml
 
 

@@ -1,0 +1,10 @@
+apiVersion: dapr.io/v1alpha1
+kind: Subscription
+metadata:
+  name: golang-subscription-all
+spec:
+  topic: ALL
+  route: /receive_all
+  pubsubname: pubsub
+scopes:
+- golang-subscriber

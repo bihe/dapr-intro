@@ -189,6 +189,59 @@ auth:
   secretStore: kubernetes
 ```
 
+**Subscriptions**
+
+On deployment/start of the pubsub component the necessary Topics/Subscriptions are created for the PubSub components. This can be done by means of programmatic subscriptions or by declaratice subscriptions.
+
+Example from the ```dotnet-subscriber``` tells dapr that this app should be subscribed for the topics "ALL" and "Topic2".
+
+```csharp
+[HttpGet("/dapr/subscribe")]
+public List<Subscription> GetSubscription()
+{
+    return new List<Subscription>{
+        new Subscription{
+            PubSubName = PubSubName,
+            Topic = "ALL",
+            Route = "receive_all"
+        },
+        new Subscription{
+            PubSubName = PubSubName,
+            Topic = "Topic2",
+            Route = "receive_c"
+        }
+    };
+}
+```
+
+On startup of dapr and the container the fetch for the programmatic subscription is visible in the logs - the route ```/dapr/subscribe``` is fetched by the dapr runtime.
+
+```
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/1.1 GET http://127.0.0.1:5000/dapr/subscribe application/json - - 200 - application/json;+charset=utf-8 175.3901ms
+```
+
+It is also possible to define the subscriptions via a **declaratice subscription** with a YAML file (https://v1-rc1.docs.dapr.io/developing-applications/building-blocks/pubsub/howto-publish-subscribe/)
+
+This is done for the ```golang-subscriber``` where the topics and routes are defined by a yaml file:
+
+```yaml
+apiVersion: dapr.io/v1alpha1
+kind: Subscription
+metadata:
+  name: golang-subscription-all
+spec:
+  topic: ALL
+  route: /receive_all
+  pubsubname: pubsub
+scopes:
+- golang-subscriber
+```
+
+**NOTE**: For each topic a file is needed - I have not found out if one file containing all topics is possible.
+
+### Swap PubSub component
+
 The nice abstraction feature of dapr enables us, to swap the PubSub component. In this example the redis-based pubsub is replaced with Azure Service-Bus:
 
 ```yaml
@@ -219,32 +272,6 @@ To create a new Service Bus go to the Azure Portal https://portal.azure.com and 
 
 - Pricing Tier: Standard is needed as we are using Topics
 
-**Programmatic Subscriptions**
-
-On deployment/start of the pubsub component the necessary Topics/Subscriptions are created for the Azure Service Bus. This is done by means of programmatic subscriptions. The subscriber-apps provide a JSON repsonse telling dapr for wich Topics the subscribe and on which routes the message is processed:
-
-Example from the ```dotnet-subscriber``` tells dapr that this app should be subscribed for the topics "ALL" and "Topic2".
-
-```csharp
-[HttpGet("/dapr/subscribe")]
-public List<Subscription> GetSubscription()
-{
-    return new List<Subscription>{
-        new Subscription{
-            PubSubName = PubSubName,
-            Topic = "ALL",
-            Route = "receive_all"
-        },
-        new Subscription{
-            PubSubName = PubSubName,
-            Topic = "Topic2",
-            Route = "receive_c"
-        }
-    };
-}
-```
-
-It is also possible to define the subscriptions via a **declaratice subscription** with a YAML file (https://v1-rc1.docs.dapr.io/developing-applications/building-blocks/pubsub/howto-publish-subscribe/)
 
 ### Credentials
 As defined in the yaml file credentials are needed to access the Service Bus. We need the __Connection-String__ and store it within kubernetes. To do so ```kubectl```can be used as follows:
