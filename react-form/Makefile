@@ -2,7 +2,7 @@
 REPO=bihe
 IMAGE_REACT=${REPO}/dapr-react-form:latest
 
-.PHONY: help build dapr-run docker-build docker-run clean all
+.PHONY: help build dapr-run docker-build docker-run clean all docker-build-arm64
 
 # some windows magic
 ifeq ($(OS),Windows_NT)
@@ -17,6 +17,7 @@ help:
 	@echo "build"
 	@echo "dapr-run"
 	@echo "docker-build"
+	@echo "docker-build-arm64"
 	@echo "docker-run"
 	@echo "clean"
 	@echo "all"
@@ -32,6 +33,10 @@ dapr-run: build
 
 docker-build:
 	@docker build --pull -t ${IMAGE_REACT} ./
+
+docker-build-arm64:
+	@docker build --pull -t 192.168.1.111:32000/${IMAGE_REACT}-arm64 -f Dockerfile.arm64 ./
+	@docker push 192.168.1.111:32000/${IMAGE_REACT}-arm64
 
 docker-run: docker-build
 	@docker run -it -p 1127.0.0.1:8080:8080 ${IMAGE_REACT}

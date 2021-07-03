@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: react-form
+  labels:
+    app: react-form
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: react-form
+  template:
+    metadata:
+      labels:
+        app: react-form
+      annotations:
+        dapr.io/enabled: "true"
+        dapr.io/app-id: "react-form"
+        dapr.io/app-port: "8080"
+    spec:
+      containers:
+      - name: react-form
+        image: localhost:32000/bihe/dapr-react-form:latest-arm64
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: react-form
+  labels:
+    app: react-form
+spec:
+  selector:
+    app: react-form
+  type: LoadBalancer
+  ports:
+    - name: react-form-port
+      protocol: TCP
+      port: 80
+      targetPort: 8080
+  loadBalancerIP: 192.168.1.122
+
+

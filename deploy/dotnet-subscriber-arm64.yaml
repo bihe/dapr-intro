@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dotnet-subscriber
+  labels:
+    app: dotnet-subscriber
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dotnet-subscriber
+  template:
+    metadata:
+      labels:
+        app: dotnet-subscriber
+      annotations:
+        dapr.io/enabled: "true"
+        dapr.io/app-id: "dotnet-subscriber"
+        dapr.io/app-port: "5000"
+    spec:
+      containers:
+      - name: dotnet-subscriber
+        image: localhost:32000/bihe/dapr-dotnet-subscriber:latest-arm64
+        ports:
+        - containerPort: 5000

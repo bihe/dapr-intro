@@ -2,7 +2,7 @@
 REPO=bihe
 IMAGE_GOLANG=${REPO}/dapr-golang-subscriber:latest
 
-.PHONY: help build dapr-run docker-build docker-run clean all
+.PHONY: help build dapr-run docker-build docker-run clean all docker-build-arm64
 
 help:
 	@echo "Makefile arguments:"
@@ -11,6 +11,7 @@ help:
 	@echo "build"
 	@echo "dapr-run"
 	@echo "docker-build"
+	@echo "docker-build-arm64"
 	@echo "docker-run"
 	@echo "clean"
 	@echo "all"
@@ -29,6 +30,10 @@ dapr-run: build
 
 docker-build:
 	@docker build --pull -t ${IMAGE_GOLANG} ./
+
+docker-build-arm64:
+	@docker build --pull -t 192.168.1.111:32000/${IMAGE_GOLANG}-arm64 -f Dockerfile.arm64 ./
+	@docker push 192.168.1.111:32000/${IMAGE_GOLANG}-arm64
 
 docker-run: docker-build
 	@docker run -it -p 127.0.0.1:3000:3000 ${IMAGE_GOLANG}

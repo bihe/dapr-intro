@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: golang-subscriber
+  labels:
+    app: golang-subscriber
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: golang-subscriber
+  template:
+    metadata:
+      labels:
+        app: golang-subscriber
+      annotations:
+        dapr.io/enabled: "true"
+        dapr.io/app-id: "golang-subscriber"
+        dapr.io/app-port: "3000"
+    spec:
+      containers:
+      - name: golang-subscriber
+        image: localhost:32000/bihe/dapr-golang-subscriber:latest-arm64
+        ports:
+        - containerPort: 3000

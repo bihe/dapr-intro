@@ -1,6 +1,6 @@
 #vars
 
-.PHONY: help deploy-redis undeploy-redis deploy-azsb undeploy-azsb
+.PHONY: help deploy-redis undeploy-redis deploy-azsb undeploy-azsb deploy-app-arm64 undeploy-app-arm64
 
 help:
 	@echo "Makefile arguments:"
@@ -10,6 +10,8 @@ help:
 	@echo "	- undeploy-redis"
 	@echo "	- deploy-azsb"
 	@echo "	- undeploy-azsb"
+	@echo "	- deploy-app-arm64"
+	@echo "	- undeploy-app-arm64"
 	@echo "	- help"
 
 .DEFAULT_GOAL := help
@@ -40,4 +42,16 @@ _undeploy-app:
 	@kubectl delete -f ./golang-subscriber-subscribe-ALL.yaml
 	@kubectl delete -f ./golang-subscriber-subscribe-Topic1.yaml
 
+deploy-app-arm64:
+	@kubectl apply -f ./react-form-arm64.yaml
+	@kubectl apply -f ./dotnet-subscriber-arm64.yaml
+	@kubectl apply -f ./golang-subscriber-arm64.yaml
+	@kubectl apply -f ./golang-subscriber-subscribe-ALL.yaml
+	@kubectl apply -f ./golang-subscriber-subscribe-Topic1.yaml
 
+undeploy-app-arm64:
+	@kubectl delete -f ./react-form-arm64.yaml
+	@kubectl delete -f ./dotnet-subscriber-arm64.yaml
+	@kubectl delete -f ./golang-subscriber-arm64.yaml
+	@kubectl delete -f ./golang-subscriber-subscribe-ALL.yaml
+	@kubectl delete -f ./golang-subscriber-subscribe-Topic1.yaml
